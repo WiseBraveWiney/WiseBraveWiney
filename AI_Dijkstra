@@ -1,0 +1,49 @@
+NODES = ['A','B','C','D','E','F','G']
+EDGES = {
+    'A' : {'B':3, 'C':5, 'D':2},
+    'B' : {'A':3, 'C':2, 'E':3},
+    'C' : {'A':5, 'B':2, 'D':1, 'F':4},
+    'D' : {'A':2, 'C':1},
+    'E' : {'B':3, 'F':3, 'G':2},
+    'F' : {'C':4, 'E':3},
+    'G' : {'E':2}
+}
+START = 'A'
+END = 'F'
+PATH_LIST = [[START]]
+
+def get_distance(path, edges):
+    total = 0
+    for i in range(len(path)-1):
+        start, end = path[i], path[i+1]
+        total += edges[start][end]
+    return total
+
+def get_path(path_list, edges, end):
+    new_path_list = []
+    for path in path_list:
+        last_node = path[-1]
+        found = False
+        if last_node != end:
+            for next_node in edges[last_node]:
+                if next_node not in path:
+                    new_path = list(path)
+                    new_path.append(next_node)
+                    new_path_list.append(new_path)
+                    found = True
+        if not found:
+            new_path_list.append(path)
+    if new_path_list == path_list:
+        return [x for x in path_list if x[-1] == end]
+    return get_path(new_path_list,edges, end)
+
+valid_path = get_path(PATH_LIST, EDGES, END)
+best_distance = -1
+for path in valid_path:
+    if best_distance == -1 or get_distance(path, EDGES) < best_distance:
+        best_distance = get_distance(path, EDGES)
+
+print best_distance
+for path in valid_path:
+    if get_distance(path,EDGES) == best_distance:
+        print path
